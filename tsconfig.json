@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "paths": { "*": ["types/*"] },
+    "baseUrl": ".",
+    "target": "es2017",
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "noImplicitThis": false,
+    "noImplicitAny": false,
+    "typeRoots": ["./node_modules/@types"],
+    "outDir": "./dist",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "exclude": ["node_module/**", "dist"]
+}

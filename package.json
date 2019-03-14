@@ -1,0 +1,33 @@
+{
+  "name": "@steffi/http",
+  "version": "1.0.0",
+  "description": "Steffi HTTP plugin",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.flnf.hu/ono/steffi-http.git"
+  },
+  "keywords": [
+    "steffi",
+    "home",
+    "assistant",
+    "plugin",
+    "http"
+  ],
+  "author": "David Onofer <david.onofer@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "publishConfig": {
+    "registry": "https://npm.flnf.hu"
+  },
+  "dependencies": {
+    "@steffi/core": "^1.0.0",
+    "path-to-regexp": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^11.11.3"
+  }
+}
