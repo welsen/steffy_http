@@ -1,8 +1,7 @@
 import { IInjectable, ILogger, inject, injectable, IServerPlugin } from '@steffi/core';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { parse as urlParse } from 'url';
-import { SteffiRequest } from './classes/steffi-request.class';
-import { SteffiResponse } from './classes/steffi-response.class';
+import { SteffiRequest, SteffiResponse } from './classes';
 
 @injectable()
 export class HttpServerPlugin implements IServerPlugin {

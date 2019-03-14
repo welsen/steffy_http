@@ -1,7 +1,6 @@
 import { ServerResponse } from 'http';
 import { UrlWithStringQuery } from 'url';
-import { DEFAULT_HTML_HEADERS } from '../constants/default-html-headers.constant';
-import { DEFAULT_JSON_HEADERS } from '../constants/default-json-headers.constant';
+import { DEFAULT_HTML_HEADERS, DEFAULT_JSON_HEADERS } from '../constants';
 
 export class SteffiResponse {
   private url: UrlWithStringQuery;
