@@ -55,6 +55,7 @@ export class SteffiResponse {
     this.original.write(JSON.stringify(obj));
     this.original.end();
   }
+  
   public payload(payload: any) {
     const headers = Object.assign({}, DEFAULT_JSON_HEADERS, { 'content-type': payload.contentType });
     this.original.writeHead(payload.status, payload.message, headers);

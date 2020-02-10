@@ -3,6 +3,7 @@ import { IncomingMessage } from 'http';
 import pathToRegexp from 'path-to-regexp';
 import { UrlWithStringQuery } from 'url';
 import { endpointContainer } from '../constants/endpoint-container.constant';
+import { isString } from 'util';
 
 export class SteffiRequest {
   private url: UrlWithStringQuery;
@@ -93,7 +94,7 @@ export class SteffiRequest {
     } catch (error) {
       this.logger.error('STEFFI SYSTEM', error);
     }
-    this.body = body || JSON.stringify(body);
+    this.body = isString(body) ? JSON.parse(body) : {};
   }
 
   private getMethod() {
@@ -108,19 +109,23 @@ export class SteffiRequest {
     this.getMethod();
     this.getHeaders();
     if (this.method === 'post') {
-      this.getBody();
+      await this.getBody();
     }
-    this.getEndpoint(this.url.pathname!);
-
     try {
-      this.rest = await injector.get<IRestMeta>(useInjectionToken(`rest_${this.method}_${this.endpoint}`));
-    } catch (error) {
-      throw new Error(`rest call 'rest_${this.method}_${this.endpoint}' not found`);
-    }
+      this.getEndpoint(this.url.pathname!);
+      try {
+        this.rest = await injector.get<IRestMeta>(useInjectionToken(`rest_${this.method}_${this.endpoint}`));
+      } catch (error) {
+        throw new Error(`rest call 'rest_${this.method}_${this.endpoint}' not found`);
+      }
 
-    try {
-      this.restInstance = await injector.get(useInjectionToken(this.rest.name));
+      try {
+        this.restInstance = await injector.get(useInjectionToken(this.rest.name));
+      } catch (error) {
+        throw error;
+      }
     } catch (error) {
+      // this.logger.error('HttpServerPlugin', error);
       throw error;
     }
   }

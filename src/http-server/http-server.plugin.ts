@@ -1,4 +1,5 @@
-import { IInjectable, ILogger, inject, injectable, IServerPlugin } from '@steffi/core';
+import { IInjectable, inject, injectable, IServerPlugin } from '@steffi/core';
+import { LoggerPlugin } from '@steffi/logger';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { parse as urlParse } from 'url';
 import { SteffiRequest, SteffiResponse } from './classes';
@@ -8,13 +9,14 @@ export class HttpServerPlugin implements IServerPlugin {
   public pluginName = 'HttpServer';
   public server: any;
 
-  constructor(@inject('SteffiConfig') private config: IInjectable, @inject('LoggerPlugin') private logger: ILogger) { }
+  constructor(@inject('SteffiConfig') private config: IInjectable, @inject('LoggerPlugin') private logger: LoggerPlugin) { }
 
   public listen() {
     this.server = createServer((req, res) => {
       return this.httpParseRequest(req, res);
     });
     this.server.listen(this.config.settings.port || 5737);
+    this.logger.log(`${this.pluginName}`, `listening on port ${this.config.settings.port || 5737}`);
   }
 
   private async httpParseRequest(request: IncomingMessage, response: ServerResponse) {
@@ -27,21 +29,24 @@ export class HttpServerPlugin implements IServerPlugin {
     const url = urlParse(`${hostUrl}`);
 
     const req = new SteffiRequest(request, url, this.logger);
-    await req.parse();
     try {
+      await req.parse();
       const res = new SteffiResponse(response, url);
-      const result: any = await req.rest.func.apply(req.restInstance, [...req.parsed.args, req.parsed, res]);
+      let result;
+      if (req.rest.func) {
+        result = await req.rest.func.apply(req.restInstance, [...req.parsed.args, req.parsed, res]);
+      }
       if (result) {
         if (result.status || result.message || result.contentType) {
           res.payload(result);
-          this.logger.log('STEFFI SYSTEM', `${request.method}`, req.info, 'RESPONSE', result.payload || null);
+          this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'payload');
         } else {
           res.json(result);
-          this.logger.log('STEFFI SYSTEM', `${request.method}`, req.info, 'RESPONSE', result);
+          this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'json');
         }
       } else {
         res.null();
-        this.logger.log('STEFFI SYSTEM', `${request.method}`, req.info, 'RESPONSE', 'null response');
+        this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'null response');
       }
       try {
         response.end();
@@ -49,7 +54,7 @@ export class HttpServerPlugin implements IServerPlugin {
         // response ended already - possible native use
       }
     } catch (error) {
-      this.logger.error('STEFFI SYSTEM', error);
+      this.logger.error(`Steffi ${this.pluginName}`, error);
       SteffiResponse.error(url, response, error);
     } finally {
     }

@@ -1,11 +1,11 @@
 {
   "name": "@steffi/http",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Steffi HTTP plugin",
   "main": "dist/index.js",
   "scripts": {
     "test": "echo 'Not implemented yet!'",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "build": "tsc"
   },
   "repository": {
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@steffi/core": "^1.0.0",
+    "@steffi/logger": "^1.0.0",
     "path-to-regexp": "^3.0.0"
   },
   "devDependencies": {
