@@ -9,16 +9,12 @@ export class SteffiResponse {
   public static ok(response: ServerResponse) {
     response.writeHead(200, 'OK', DEFAULT_JSON_HEADERS);
     response.end();
-}
+  }
 
   public static error(url: UrlWithStringQuery, response: ServerResponse, error: any) {
     response.writeHead(404, `endpoint '${url.pathname}' not found`, DEFAULT_HTML_HEADERS);
     response.write(`<p>no endpoint '${url.pathname}'</p>`);
-    response.write(
-      `<pre style="padding: 8px; border: 1px solid rgba(128, 128, 128, 1); border-radius: 8px; background-color: rgba(192, 192, 192, 1);">${
-        error.stack
-      }</pre>`
-    );
+    response.write(`<pre style="padding: 8px; border: 1px solid rgba(128, 128, 128, 1); border-radius: 8px; background-color: rgba(192, 192, 192, 1);">${error.stack}</pre>`);
     response.end();
   }
 
@@ -55,7 +51,7 @@ export class SteffiResponse {
     this.original.write(JSON.stringify(obj));
     this.original.end();
   }
-  
+
   public payload(payload: any) {
     const headers = Object.assign({}, DEFAULT_JSON_HEADERS, { 'content-type': payload.contentType });
     this.original.writeHead(payload.status, payload.message, headers);

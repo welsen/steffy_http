@@ -2,6 +2,9 @@ import { injector, IServerPlugin, useInjectionToken, registerInjectionToken } fr
 import { HttpServerPlugin } from './http-server';
 
 registerInjectionToken('HttpServerPlugin');
-injector.bind<IServerPlugin>(useInjectionToken('HttpServerPlugin')).to(HttpServerPlugin).inSingletonScope();
+injector
+  .bind<IServerPlugin>(useInjectionToken('HttpServerPlugin'))
+  .to(HttpServerPlugin)
+  .inSingletonScope();
 
-export * from './http-server'
+export * from './http-server';

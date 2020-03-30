@@ -9,7 +9,7 @@ export class HttpServerPlugin implements IServerPlugin {
   public pluginName = 'HttpServer';
   public server: any;
 
-  constructor(@inject('SteffiConfig') private config: IInjectable, @inject('LoggerPlugin') private logger: LoggerPlugin) { }
+  constructor(@inject('SteffiConfig') private config: IInjectable, @inject('LoggerPlugin') private logger: LoggerPlugin) {}
 
   public listen() {
     this.server = createServer((req, res) => {

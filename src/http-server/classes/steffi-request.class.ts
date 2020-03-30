@@ -57,9 +57,7 @@ export class SteffiRequest {
   }
 
   private getEndpoint(url: string) {
-    const possibleEndpoints = endpointContainer.filter(
-      i => i.match(/([\-\/\[\]+?.,\\\^$|#\s])/g)!.length === url.match(/([\-\/\[\]+?.,\\\^$|#\s])/g)!.length || i === url
-    );
+    const possibleEndpoints = endpointContainer.filter(i => i.match(/([\-\/\[\]+?.,\\\^$|#\s])/g)!.length === url.match(/([\-\/\[\]+?.,\\\^$|#\s])/g)!.length || i === url);
     let endpoint = -1;
     let params: any;
     let args: Array<any> = [];

@@ -1,4 +1,4 @@
-import { registerRest } from "./register-rest";
+import { registerRest } from './register-rest';
 
 export function del(path: string) {
   return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {

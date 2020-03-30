@@ -31,6 +31,7 @@
     "path-to-regexp": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^11.11.3"
+    "@types/node": "^11.11.3",
+    "typescript": "^3.8.3"
   }
 }
