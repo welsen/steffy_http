@@ -52,8 +52,10 @@ export class HttpServerPlugin implements IServerPlugin {
 
   private async routes() {
     await asyncForEach(endpointContainer, async (ep) => {
-      const restMeta = await storage.get<IRestMeta>(`rest:${ep.method}:${ep.path}`);
-      this.router[ep.method](ep.path, restMeta.func);
+      const restMeta: IRestMeta = await storage.get<IRestMeta>(`rest:${ep.method}:${ep.path}`);
+      const controllerMeta = Reflect.getMetadata('steffy:http:controller', restMeta.controller.constructor);
+      if (!controllerMeta) throw new Error(`${restMeta.controller.constructor.name} is not a @Controller`);
+      this.router[ep.method](`${controllerMeta.root}${ep.path}`, restMeta.func);
     });
     return this.router.routes();
   }

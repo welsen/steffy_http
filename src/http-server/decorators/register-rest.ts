@@ -46,6 +46,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
     }
   };
   const meta: IRestMeta = {
+    controller: target,
     name: target.constructor.name,
     func: wrapperFn.bind(target),
   };
@@ -58,4 +59,3 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
 }
 
 export { registerRest };
-

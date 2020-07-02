@@ -1,4 +1,5 @@
 export * from './body.decorator';
+export * from './controller.decorator';
 export * from './del.decorator';
 export * from './get.decorator';
 export * from './params.decorator';
