@@ -1,5 +1,6 @@
 src/
 node_modules/
 index.ts
+.gitlab-ci.yaml
 *.json
 *.tgz

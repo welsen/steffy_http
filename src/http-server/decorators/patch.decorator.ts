@@ -1,7 +1,7 @@
 import { registerRest } from './register-rest';
 
-export function Post(path: string) {
+export function Patch(path: string) {
   return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    registerRest('post', path, target, propertyKey);
+    registerRest('patch', path, target, propertyKey);
   };
 }

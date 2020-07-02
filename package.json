@@ -1,21 +1,19 @@
 {
-  "name": "@steffi/http",
-  "version": "1.0.1",
-  "description": "Steffi HTTP plugin",
+  "name": "@steffy/http",
+  "version": "1.9.5",
+  "description": "Steffy HTTP plugin",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo 'Not implemented yet!'",
+    "test": "echo \"Warning: no test specified\" && exit 0",
     "prepare": "npm run build",
     "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "https://git.flnf.hu/ono/steffi-http.git"
+    "url": "https://git.flnf.hu/ono/steffy-http.git"
   },
   "keywords": [
-    "steffi",
-    "home",
-    "assistant",
+    "steffy",
     "plugin",
     "http"
   ],
@@ -26,9 +24,15 @@
     "registry": "https://npm.flnf.hu"
   },
   "dependencies": {
-    "@steffi/core": "^1.0.0",
-    "@steffi/logger": "^1.0.0",
-    "path-to-regexp": "^3.0.0"
+    "@steffy/core": "^1.9.1",
+    "@steffy/di": "^1.0.0",
+    "@steffy/logger": "^1.9.2",
+    "koa": "^2.12.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-helmet": "^5.2.0",
+    "koa-router": "^8.0.8",
+    "koa-socket-2": "^1.2.0",
+    "koa-static": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^11.11.3",
