@@ -1,62 +1,60 @@
-import { IInjectable, inject, injectable, IServerPlugin } from '@steffi/core';
-import { LoggerPlugin } from '@steffi/logger';
-import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { parse as urlParse } from 'url';
-import { SteffiRequest, SteffiResponse } from './classes';
+import { asyncForEach, IRestMeta, IServerPlugin } from '@steffy/core';
+import { Inject, Optional, Singleton, storage } from '@steffy/di';
+import { LoggerPlugin } from '@steffy/logger';
+import Koa from 'koa';
+import bodyParser from 'koa-bodyparser';
+import helmet from 'koa-helmet';
+import Router from 'koa-router';
+import IO from 'koa-socket-2';
+import serve from 'koa-static';
+import { endpointContainer } from './constants';
 
-@injectable()
+@Singleton()
 export class HttpServerPlugin implements IServerPlugin {
   public pluginName = 'HttpServer';
-  public server: any;
+  public server = new Koa();
+  public router = new Router();
 
-  constructor(@inject('SteffiConfig') private config: IInjectable, @inject('LoggerPlugin') private logger: LoggerPlugin) {}
+  constructor(@Optional('SteffyConfig') private config: any, @Inject() private logger: LoggerPlugin) {}
 
-  public listen() {
-    this.server = createServer((req, res) => {
-      return this.httpParseRequest(req, res);
-    });
+  /**
+   * setup routes defined by the controllers
+   */
+  public async warmup() {
+    this.server
+      .use(helmet())
+      .use(
+        bodyParser({
+          enableTypes: ['json', 'form', 'text', 'xml'],
+        })
+      )
+      .use(await this.routes())
+      .use(this.router.allowedMethods());
+  }
+
+  public async listen(path?: string, socket?: IO);
+  public async listen(path?: string | IO, socket?: IO) {
+    if (path && path instanceof String) {
+      this.serve(path as string);
+    }
+    if ((path && !(path instanceof String) && !socket) || socket) {
+      let sock = path;
+      if (socket) sock = socket;
+      sock.attach(this.server);
+    }
     this.server.listen(this.config.settings.port || 5737);
     this.logger.log(`${this.pluginName}`, `listening on port ${this.config.settings.port || 5737}`);
   }
 
-  private async httpParseRequest(request: IncomingMessage, response: ServerResponse) {
-    if (request.method!.toLowerCase() === 'options') {
-      SteffiResponse.ok(response);
-      return;
-    }
-    const headers = request.headers;
-    const hostUrl = headers.host!.includes('://') ? `${headers.host}${request.url}` : `http://${headers.host}${request.url}`;
-    const url = urlParse(`${hostUrl}`);
+  public serve(path: string) {
+    this.server.use(serve(path));
+  }
 
-    const req = new SteffiRequest(request, url, this.logger);
-    try {
-      await req.parse();
-      const res = new SteffiResponse(response, url);
-      let result;
-      if (req.rest.func) {
-        result = await req.rest.func.apply(req.restInstance, [...req.parsed.args, req.parsed, res]);
-      }
-      if (result) {
-        if (result.status || result.message || result.contentType) {
-          res.payload(result);
-          this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'payload');
-        } else {
-          res.json(result);
-          this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'json');
-        }
-      } else {
-        res.null();
-        this.logger.log(`Steffi ${this.pluginName}`, `${request.method}`, req.info, 'RESPONSE', 'null response');
-      }
-      try {
-        response.end();
-      } catch {
-        // response ended already - possible native use
-      }
-    } catch (error) {
-      this.logger.error(`Steffi ${this.pluginName}`, error);
-      SteffiResponse.error(url, response, error);
-    } finally {
-    }
+  private async routes() {
+    await asyncForEach(endpointContainer, async (ep) => {
+      const restMeta = await storage.get<IRestMeta>(`rest:${ep.method}:${ep.path}`);
+      this.router[ep.method](ep.path, restMeta.func);
+    });
+    return this.router.routes();
   }
 }
