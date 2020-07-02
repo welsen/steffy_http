@@ -55,7 +55,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
     path,
   };
   endpointContainer.push(epMeta);
-  storage.storeAsDynamicScoped(`rest:${method}:${path}`, () => meta);
+  storage.storeAsDynamicScoped(`rest:${target.constructor.name.toLowerCase()}:${method}:${path}`, () => meta);
 }
 
 export { registerRest };
