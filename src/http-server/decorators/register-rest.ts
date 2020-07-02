@@ -38,7 +38,11 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
       const result = await (target[propertyKey] as Function).call(tgt, ...fnArgs);
       if (result) {
-        context.response.body = result;
+        if (!result.next) {
+          context.response.body = result;
+        } else {
+          context.response.body = (await result.next()).value;
+        }
       }
     } catch (error) {
       console.error(error);
