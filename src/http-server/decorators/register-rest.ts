@@ -51,6 +51,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
     func: wrapperFn.bind(target),
   };
   const epMeta = {
+    controller: target,
     method,
     path,
   };
