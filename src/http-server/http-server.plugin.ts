@@ -32,6 +32,10 @@ export class HttpServerPlugin implements IServerPlugin {
       .use(this.router.allowedMethods());
   }
 
+  public use(...args: any) {
+    this.server.use(...args);
+  }
+
   public async listen(path?: string, socket?: IO);
   public async listen(path?: string | IO, socket?: IO) {
     if (path && path instanceof String) {
