@@ -8,6 +8,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
     throw new Error('invalid path! path must start with "/"');
   }
   const paramsMeta: FromProps = Reflect.getOwnMetadata('steffy:http:params', target, propertyKey) || new Map<number, string>();
+  const stateMeta: FromProps = Reflect.getOwnMetadata('steffy:http:state', target, propertyKey) || new Map<number, string>();
   const bodyMeta: FromProps = Reflect.getOwnMetadata('steffy:http:body', target, propertyKey) || new Map<number, string>();
   const queryMeta: FromProps = Reflect.getOwnMetadata('steffy:http:query', target, propertyKey) || new Map<number, string>();
   const wrapperFn = async (context: any, next: Function) => {
@@ -19,6 +20,10 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       for (const param of paramsMeta) {
         fnArgs[param[0]] = null;
         if (context.params[param[1]]) fnArgs[param[0]] = params[param[0]](context.params[param[1]]);
+      }
+      for (const stateParam of stateMeta) {
+        fnArgs[stateParam[0]] = null;
+        if (context.state[stateParam[1]]) fnArgs[stateParam[0]] = params[stateParam[0]](context.state[stateParam[1]]);
       }
       for (const bodyParam of bodyMeta) {
         fnArgs[bodyParam[0]] = null;

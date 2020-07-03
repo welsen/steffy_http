@@ -8,4 +8,5 @@ export * from './post.decorator';
 export * from './put.decorator';
 export * from './query.decorator';
 export * from './register-rest';
+export * from './state.decorator';
 
