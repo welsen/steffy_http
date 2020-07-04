@@ -28,7 +28,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       }
       for (const sessionParam of sessionMeta) {
         fnArgs[sessionParam[0]] = null;
-        if (context.state[sessionParam[1]]) fnArgs[sessionParam[0]] = params[sessionParam[0]](context.state[sessionParam[1]]);
+        if (context.session[sessionParam[1]]) fnArgs[sessionParam[0]] = params[sessionParam[0]](context.session[sessionParam[1]]);
       }
       for (const bodyParam of bodyMeta) {
         fnArgs[bodyParam[0]] = null;
@@ -41,11 +41,17 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         fnArgs[queryParam[0]] = null;
         if (context.request.query[queryParam[1]]) fnArgs[queryParam[0]] = params[queryParam[0]](context.request.query[queryParam[1]]);
       }
+      
       tgt.$koa = context;
       tgt.$next = next;
+      tgt.state = context.state;
+      tgt.session = context.session;
+
       fnArgs.push(context);
       fnArgs.push(next);
+      
       logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
+      
       const result = await (target[propertyKey] as Function).call(tgt, ...fnArgs);
       if (result) {
         if (!result.next) {
