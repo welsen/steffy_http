@@ -9,6 +9,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
   }
   const paramsMeta: FromProps = Reflect.getOwnMetadata('steffy:http:params', target, propertyKey) || new Map<number, string>();
   const stateMeta: FromProps = Reflect.getOwnMetadata('steffy:http:state', target, propertyKey) || new Map<number, string>();
+  const sessionMeta: FromProps = Reflect.getOwnMetadata('steffy:http:session', target, propertyKey) || new Map<number, string>();
   const bodyMeta: FromProps = Reflect.getOwnMetadata('steffy:http:body', target, propertyKey) || new Map<number, string>();
   const queryMeta: FromProps = Reflect.getOwnMetadata('steffy:http:query', target, propertyKey) || new Map<number, string>();
   const wrapperFn = async (context: any, next: Function) => {
@@ -24,6 +25,10 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       for (const stateParam of stateMeta) {
         fnArgs[stateParam[0]] = null;
         if (context.state[stateParam[1]]) fnArgs[stateParam[0]] = params[stateParam[0]](context.state[stateParam[1]]);
+      }
+      for (const sessionParam of sessionMeta) {
+        fnArgs[sessionParam[0]] = null;
+        if (context.state[sessionParam[1]]) fnArgs[sessionParam[0]] = params[sessionParam[0]](context.state[sessionParam[1]]);
       }
       for (const bodyParam of bodyMeta) {
         fnArgs[bodyParam[0]] = null;
