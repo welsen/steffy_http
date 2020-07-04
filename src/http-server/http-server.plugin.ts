@@ -7,6 +7,7 @@ import helmet from 'koa-helmet';
 import Router from 'koa-router';
 import IO from 'koa-socket-2';
 import serve from 'koa-static';
+import session from 'koa-session';
 import { endpointContainer } from './constants';
 
 @Singleton()
@@ -22,6 +23,7 @@ export class HttpServerPlugin implements IServerPlugin {
    */
   public async warmup() {
     this.server
+      .use(session({key:'STEFFY.SESSION'}, this.server))
       .use(helmet())
       .use(
         bodyParser({
