@@ -23,7 +23,7 @@ export class HttpServerPlugin implements IServerPlugin {
    */
   public async warmup() {
     this.server
-      .use(session({key:'STEFFY.SESSION'}, this.server))
+      .use(session({ key: 'STEFFY.SESSION' }, this.server))
       .use(helmet())
       .use(
         bodyParser({
@@ -40,10 +40,10 @@ export class HttpServerPlugin implements IServerPlugin {
 
   public async listen(path?: string, socket?: IO);
   public async listen(path?: string | IO, socket?: IO) {
-    if (path && path instanceof String) {
+    if (path && typeof path === 'string') {
       this.serve(path as string);
     }
-    if ((path && !(path instanceof String) && !socket) || socket) {
+    if ((path && !(typeof path === 'string') && !socket) || socket) {
       let sock = path;
       if (socket) sock = socket;
       sock.attach(this.server);
