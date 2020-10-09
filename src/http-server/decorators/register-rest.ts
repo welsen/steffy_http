@@ -41,7 +41,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         fnArgs[queryParam[0]] = null;
         if (context.request.query[queryParam[1]]) fnArgs[queryParam[0]] = params[queryParam[0]](context.request.query[queryParam[1]]);
       }
-      
+
       tgt.$koa = context;
       tgt.$next = next;
       tgt.state = context.state;
@@ -49,13 +49,17 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
 
       fnArgs.push(context);
       fnArgs.push(next);
-      
+
       logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
-      
+
       const result = await (target[propertyKey] as Function).call(tgt, ...fnArgs);
       if (result) {
         if (!result.next) {
           context.response.body = result;
+        } else if (result.errorCode) {
+          tgt.$koa.status = result.errorCode || 500;
+          tgt.$koa.body = result.message;
+          tgt.$koa.app.emit('error', result, tgt.$koa);
         } else {
           context.response.body = (await result.next()).value;
         }
