@@ -33,7 +33,8 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       for (const bodyParam of bodyMeta) {
         fnArgs[bodyParam[0]] = null;
         if (context.request.body) {
-          const body = JSON.parse(context.request.body);
+          let body = context.request.body;
+          if (typeof body === 'string') body = JSON.parse(context.request.body);
           if (body[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](body[bodyParam[1]]);
         }
       }
