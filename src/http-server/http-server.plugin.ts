@@ -2,6 +2,7 @@ import { asyncForEach, IRestMeta, IServerPlugin } from '@steffy/core';
 import { Inject, Optional, Singleton, storage } from '@steffy/di';
 import { LoggerPlugin } from '@steffy/logger';
 import Koa from 'koa';
+import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import helmet from 'koa-helmet';
 import Router from 'koa-router';
@@ -23,6 +24,7 @@ export class HttpServerPlugin implements IServerPlugin {
    */
   public async warmup() {
     this.server
+      .use(cors())
       .use(session({ key: 'STEFFY.SESSION' }, this.server))
       .use(helmet())
       .use(

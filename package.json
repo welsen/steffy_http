@@ -24,6 +24,7 @@
     "registry": "https://npm.flnf.hu"
   },
   "dependencies": {
+    "@koa/cors": "^3.1.0",
     "@steffy/core": "^1.9.2",
     "@steffy/di": "^1.0.0",
     "@steffy/logger": "^1.9.2",
