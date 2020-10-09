@@ -68,7 +68,6 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       }
     } catch (error) {
       console.error(error);
-      throw error;
     }
   };
   const meta: IRestMeta = {
