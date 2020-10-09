@@ -55,11 +55,13 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       const result = await (target[propertyKey] as Function).call(tgt, ...fnArgs);
       if (result) {
         if (!result.next) {
-          context.response.body = result;
-        } else if (result.errorCode) {
-          tgt.$koa.status = result.errorCode || 500;
-          tgt.$koa.body = result.message;
-          tgt.$koa.app.emit('error', result, tgt.$koa);
+          if (result.errorCode) {
+            tgt.$koa.status = result.errorCode || 500;
+            tgt.$koa.body = result.message;
+            tgt.$koa.app.emit('error', result, tgt.$koa);
+          } else {
+            context.response.body = result;
+          }
         } else {
           context.response.body = (await result.next()).value;
         }
