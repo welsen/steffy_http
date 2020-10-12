@@ -39,12 +39,12 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
           if (body[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](body[bodyParam[1]]);
         }
       }
-      for (const bodyParam of bodyMeta) {
-        fnArgs[bodyParam[0]] = null;
+      for (const filesParam of filesMeta) {
+        fnArgs[filesParam[0]] = null;
         if (context.request.files) {
           let files = context.request.files;
           if (typeof files === 'string') files = JSON.parse(context.request.body);
-          if (files[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](files[bodyParam[1]]);
+          if (files[filesParam[1]]) fnArgs[filesParam[0]] = params[filesParam[0]](files[filesParam[1]]);
         }
       }
       for (const queryParam of queryMeta) {
