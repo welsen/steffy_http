@@ -11,6 +11,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
   const stateMeta: FromProps = Reflect.getOwnMetadata('steffy:http:state', target, propertyKey) || new Map<number, string>();
   const sessionMeta: FromProps = Reflect.getOwnMetadata('steffy:http:session', target, propertyKey) || new Map<number, string>();
   const bodyMeta: FromProps = Reflect.getOwnMetadata('steffy:http:body', target, propertyKey) || new Map<number, string>();
+  const filesMeta: FromProps = Reflect.getOwnMetadata('steffy:http:files', target, propertyKey) || new Map<number, string>();
   const queryMeta: FromProps = Reflect.getOwnMetadata('steffy:http:query', target, propertyKey) || new Map<number, string>();
   const wrapperFn = async (context: any, next: Function) => {
     const logger = new Logger();
@@ -36,6 +37,14 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
           let body = context.request.body;
           if (typeof body === 'string') body = JSON.parse(context.request.body);
           if (body[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](body[bodyParam[1]]);
+        }
+      }
+      for (const bodyParam of bodyMeta) {
+        fnArgs[bodyParam[0]] = null;
+        if (context.request.files) {
+          let files = context.request.files;
+          if (typeof files === 'string') files = JSON.parse(context.request.body);
+          if (files[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](files[bodyParam[1]]);
         }
       }
       for (const queryParam of queryMeta) {
