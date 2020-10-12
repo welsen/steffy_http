@@ -29,6 +29,7 @@
     "@steffy/di": "^1.0.0",
     "@steffy/logger": "^1.9.2",
     "koa": "^2.12.0",
+    "koa-body": "^4.2.0",
     "koa-bodyparser": "^4.3.0",
     "koa-helmet": "^5.2.0",
     "koa-router": "^8.0.8",

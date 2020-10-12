@@ -3,7 +3,8 @@ import { Inject, Optional, Singleton, storage } from '@steffy/di';
 import { LoggerPlugin } from '@steffy/logger';
 import Koa from 'koa';
 import cors from '@koa/cors';
-import bodyParser from 'koa-bodyparser';
+// import bodyParser from 'koa-bodyparser';
+import bodyParser from 'koa-body';
 import helmet from 'koa-helmet';
 import Router from 'koa-router';
 import IO from 'koa-socket-2';
@@ -29,7 +30,7 @@ export class HttpServerPlugin implements IServerPlugin {
       .use(helmet())
       .use(
         bodyParser({
-          enableTypes: ['json', 'form', 'text', 'xml'],
+          multipart: true,
         })
       )
       .use(await this.routes())
