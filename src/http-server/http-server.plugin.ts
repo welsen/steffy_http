@@ -4,13 +4,14 @@ import { LoggerPlugin } from '@steffy/logger';
 import Koa from 'koa';
 import cors from '@koa/cors';
 // import bodyParser from 'koa-bodyparser';
-import bodyParser from 'koa-body';
 import helmet from 'koa-helmet';
 import Router from 'koa-router';
 import IO from 'koa-socket-2';
 import serve from 'koa-static';
 import session from 'koa-session';
 import { endpointContainer } from './constants';
+
+const bodyParser = require('koa-body');
 
 @Singleton()
 export class HttpServerPlugin implements IServerPlugin {
