@@ -1,6 +1,7 @@
 export * from './body.decorator';
 export * from './controller.decorator';
 export * from './del.decorator';
+export * from './files.decorator';
 export * from './get.decorator';
 export * from './params.decorator';
 export * from './patch.decorator';
