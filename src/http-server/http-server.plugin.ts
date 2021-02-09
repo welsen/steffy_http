@@ -53,7 +53,7 @@ export class HttpServerPlugin implements IServerPlugin {
       sock.attach(this.server);
     }
     this.server.listen(this.config.settings.port || 5737);
-    this.logger.log(`${this.pluginName}`, `listening on port ${this.config.settings.port || 5737}`);
+    // this.logger.log(`${this.pluginName}`, `listening on port ${this.config.settings.port || 5737}`);
   }
 
   public serve(path: string) {

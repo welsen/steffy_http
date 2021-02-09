@@ -60,9 +60,9 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       fnArgs.push(context);
       fnArgs.push(next);
 
-      logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
-
-      const result = await (target[propertyKey] as Function).call(tgt, ...fnArgs);
+      // logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
+      const fn = target[propertyKey];
+      const result = await fn.call(tgt, ...fnArgs);
       if (result) {
         if (!result.next) {
           if (result.errorCode) {
@@ -77,7 +77,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         }
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
   const meta: IRestMeta = {
