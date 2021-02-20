@@ -36,6 +36,10 @@ publish-ci:
     - /^ci\/.*/i
   script:
     - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
+    - |
       export VERSION=$(cat package.json | \
       grep version | \
       head -1 | \
@@ -64,6 +68,10 @@ publish-release:
   only:
     - /^release\/.*/i
   script:
+    - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
     - npm version patch --no-git-tag-version
     - |
       export VERSION=$(cat package.json | \
@@ -94,6 +102,10 @@ publish-beta:
   only:
     - /^beta\/.*/i
   script:
+    - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
     - npm version prerelease --preid=beta --no-git-tag-version
     - |
       export VERSION=$(cat package.json | \
