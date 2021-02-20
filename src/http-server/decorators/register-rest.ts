@@ -4,7 +4,7 @@ import { endpointContainer } from '../constants/endpoint-container.constant';
 import FromProps from '../interfaces/from-props';
 
 function registerRest(method: string, path: string, target: any, propertyKey: string) {
-  if (path[0] !== '/') {
+  if (path !== '' && path[0] !== '/') {
     throw new Error('invalid path! path must start with "/"');
   }
   const paramsMeta: FromProps = Reflect.getOwnMetadata('steffy:http:params', target, propertyKey) || new Map<number, string>();
@@ -67,7 +67,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         if (!result.next) {
           if (result.errorCode) {
             tgt.$koa.status = result.errorCode || 500;
-            tgt.$koa.body = result.message;
+            tgt.$koa.body = result;
             tgt.$koa.app.emit('error', result, tgt.$koa);
           } else {
             context.response.body = result;
@@ -87,8 +87,16 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
   };
   const epMeta = {
     controller: target,
+    controllerProperty: propertyKey,
+    controllerHandler: target[propertyKey],
     method,
     path,
+    paramsMeta,
+    stateMeta,
+    sessionMeta,
+    bodyMeta,
+    filesMeta,
+    queryMeta,
   };
   endpointContainer.push(epMeta);
   storage.storeAsDynamicScoped(`rest:${target.constructor.name.toLowerCase()}:${method}:${path}`, () => meta);

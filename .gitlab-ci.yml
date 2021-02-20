@@ -1,16 +1,25 @@
 before_script:
   - npm ci
 
+variables:
+  PROJECT: steffy-http
+  API_ORIGIN: api-origin
+
 stages:
   - test
   - build
+  - publish
 
 test:
+  except: 
+    - tags
   stage: test
   script:
-  - npm run test
+    - npm run test
 
 build:
+  except:
+    - tags
   stage: build
   script: 
     - npm run build
@@ -18,3 +27,92 @@ build:
     expire_in: 1 week
     paths: 
       - dist
+
+publish-ci:
+  except:
+    - tags
+  stage: publish
+  only:
+    - /^ci\/.*/i
+  script:
+    - |
+      export VERSION=$(cat package.json | \
+      grep version | \
+      head -1 | \
+      awk -F: '{ print $2 }' | \
+      sed 's/[",]//g' | tr -d '[[:space:]]')
+    - git config --global user.email "noreply@flnf.hu"
+    - git config --global user.name "GitLab TAGGER"
+    - export HAS_API_ORIGIN=$(git remote show | grep api-origin)
+    - echo $HAS_API_ORIGIN
+    - |
+      if [[ -z "$HAS_API_ORIGIN" ]]; then
+        git remote add ${API_ORIGIN} https://oauth2:${TAGGER}@git.flnf.hu/ono/${PROJECT}
+      fi
+    - |
+      if [ $(git tag -l "$VERSION") ]; then
+        echo "Version $VERSION already exists"
+      else
+        git tag -a $VERSION -m "Version $VERSION"
+        git push ${API_ORIGIN} $VERSION
+      fi
+
+publish-release:
+  except:
+    - tags
+  stage: publish
+  only:
+    - /^release\/.*/i
+  script:
+    - npm version patch --no-git-tag-version
+    - |
+      export VERSION=$(cat package.json | \
+      grep version | \
+      head -1 | \
+      awk -F: '{ print $2 }' | \
+      sed 's/[",]//g' | tr -d '[[:space:]]')
+    - git config --global user.email "noreply@flnf.hu"
+    - git config --global user.name "GitLab TAGGER"
+    - |
+      export HAS_API_ORIGIN=$(git remote show | grep api-origin)
+      if [[ -z "$HAS_API_ORIGIN" ]]; then
+        git remote add ${API_ORIGIN} https://oauth2:${TAGGER}@git.flnf.hu/ono/${PROJECT}
+      fi
+    - |
+      if [ $(git tag -l "$VERSION") ]; then
+        echo "Version $VERSION already exists"
+      else
+        git tag -a $VERSION -m "Version $VERSION"
+        git push api-origin $VERSION
+      fi
+    - npm publish
+
+publish-beta:
+  except:
+    - tags
+  stage: publish
+  only:
+    - /^beta\/.*/i
+  script:
+    - npm version prerelease --preid=beta --no-git-tag-version
+    - |
+      export VERSION=$(cat package.json | \
+      grep version | \
+      head -1 | \
+      awk -F: '{ print $2 }' | \
+      sed 's/[",]//g' | tr -d '[[:space:]]')
+    - git config --global user.email "noreply@flnf.hu"
+    - git config --global user.name "GitLab TAGGER"
+    - |
+      export HAS_API_ORIGIN=$(git remote show | grep api-origin)
+      if [[ -z "$HAS_API_ORIGIN" ]]; then
+        git remote add ${API_ORIGIN} https://oauth2:${TAGGER}@git.flnf.hu/ono/${PROJECT}
+      fi
+    - |
+      if [ $(git tag -l "$VERSION") ]; then
+        echo "Version $VERSION already exists"
+      else
+        git tag -a $VERSION -m "Version $VERSION"
+        git push api-origin $VERSION
+      fi
+
