@@ -20,23 +20,31 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
     const fnArgs: any[] = [];
     try {
       for (const param of paramsMeta) {
-        fnArgs[param[0]] = null;
-        if (context.params[param[1]]) fnArgs[param[0]] = params[param[0]](context.params[param[1]]);
+        const [paramIndex, paramName] = param;
+        fnArgs[paramIndex] = null;
+        if (context.params[paramName]) fnArgs[paramIndex] = params[paramIndex](context.params[paramName]);
+        if (paramName === '**') fnArgs[paramIndex] = context.params;
       }
       for (const stateParam of stateMeta) {
-        fnArgs[stateParam[0]] = null;
-        if (context.state[stateParam[1]]) fnArgs[stateParam[0]] = params[stateParam[0]](context.state[stateParam[1]]);
+        const [paramIndex, paramName] = stateParam;
+        fnArgs[paramIndex] = null;
+        if (context.state[paramName]) fnArgs[paramIndex] = params[paramIndex](context.state[paramName]);
+        if (paramName === '**') fnArgs[paramIndex] = context.state;
       }
       for (const sessionParam of sessionMeta) {
-        fnArgs[sessionParam[0]] = null;
-        if (context.session[sessionParam[1]]) fnArgs[sessionParam[0]] = params[sessionParam[0]](context.session[sessionParam[1]]);
+        const [paramIndex, paramName] = sessionParam;
+        fnArgs[paramIndex] = null;
+        if (context.session[paramName]) fnArgs[paramIndex] = params[paramIndex](context.session[paramName]);
+        if (paramName === '**') fnArgs[paramIndex] = context.session;
       }
       for (const bodyParam of bodyMeta) {
-        fnArgs[bodyParam[0]] = null;
+        const [paramIndex, paramName] = bodyParam;
+        fnArgs[paramIndex] = null;
         if (context.request.body) {
           let body = context.request.body;
           if (typeof body === 'string') body = JSON.parse(context.request.body);
-          if (body[bodyParam[1]]) fnArgs[bodyParam[0]] = params[bodyParam[0]](body[bodyParam[1]]);
+          if (body[paramName]) fnArgs[paramIndex] = params[paramIndex](body[paramName]);
+          if (paramName === '**') fnArgs[paramIndex] = body;
         }
       }
       for (const filesParam of filesMeta) {
@@ -48,8 +56,10 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         }
       }
       for (const queryParam of queryMeta) {
-        fnArgs[queryParam[0]] = null;
-        if (context.request.query[queryParam[1]]) fnArgs[queryParam[0]] = params[queryParam[0]](context.request.query[queryParam[1]]);
+        const [paramIndex, paramName] = queryParam;
+        fnArgs[paramIndex] = null;
+        if (context.request.query[paramName]) fnArgs[paramIndex] = params[paramIndex](context.request.query[paramName]);
+        if (paramName === '**') fnArgs[paramIndex] = context.request.query;
       }
 
       tgt.$koa = context;
