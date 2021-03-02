@@ -11,7 +11,7 @@ stages:
   - publish
 
 test:
-  except: 
+  except:
     - tags
   stage: test
   script:
@@ -21,11 +21,11 @@ build:
   except:
     - tags
   stage: build
-  script: 
+  script:
     - npm run build
   artifacts:
     expire_in: 1 week
-    paths: 
+    paths:
       - dist
 
 publish-ci:
@@ -35,6 +35,10 @@ publish-ci:
   only:
     - /^ci\/.*/i
   script:
+    - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
     - |
       export VERSION=$(cat package.json | \
       grep version | \
@@ -64,6 +68,10 @@ publish-release:
   only:
     - /^release\/.*/i
   script:
+    - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
     - npm version patch --no-git-tag-version
     - |
       export VERSION=$(cat package.json | \
@@ -94,6 +102,10 @@ publish-beta:
   only:
     - /^beta\/.*/i
   script:
+    - |
+      echo -e "@steffy:registry=https://registry.npmjs.org
+      //registry.npmjs.org/:_authToken=${NPM_TOKEN}
+      " > .npmrc
     - npm version prerelease --preid=beta --no-git-tag-version
     - |
       export VERSION=$(cat package.json | \
@@ -115,4 +127,4 @@ publish-beta:
         git tag -a $VERSION -m "Version $VERSION"
         git push api-origin $VERSION
       fi
-
+    - npm publish
