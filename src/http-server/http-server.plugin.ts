@@ -22,7 +22,10 @@ export class HttpServerPlugin implements IServerPlugin {
   /**
    * setup routes defined by the controllers
    */
-  public async warmup() {
+  public async warmup(preflight: Array<any> = [], postflight: Array<any> = []) {
+    for(const mw of preflight) {
+      this.server.use(mw);
+    }
     this.server
       .use(session({ key: this.config.sessionKey || 'STEFFY:SESSION' }, this.server))
       .use(cors())
@@ -34,6 +37,9 @@ export class HttpServerPlugin implements IServerPlugin {
       )
       .use(await this.routes());
     // .use(this.router.allowedMethods());
+    for(const mw of postflight) {
+      this.server.use(mw);
+    }
   }
 
   public use(...args: any) {
