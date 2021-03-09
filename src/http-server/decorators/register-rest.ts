@@ -80,10 +80,10 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
             tgt.$koa.body = result;
             tgt.$koa.app.emit('error', result, tgt.$koa);
           } else {
-            context.response.body = result;
+            tgt.$koa.response.body = result;
           }
         } else {
-          context.response.body = (await result.next()).value;
+          tgt.$koa.response.body = (await result.next()).value;
         }
       }
     } catch (error) {

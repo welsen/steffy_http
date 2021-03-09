@@ -1,16 +1,14 @@
+import cors from '@koa/cors';
 import { asyncForEach, IRestMeta, IServerPlugin } from '@steffy/core';
-import { Inject, Optional, Singleton, storage } from '@steffy/di';
+import { Inject, Optional, Singleton, storage, Transient } from '@steffy/di';
 import { LoggerPlugin } from '@steffy/logger';
 import Koa from 'koa';
-import cors from '@koa/cors';
-// import bodyParser from 'koa-bodyparser';
 import helmet from 'koa-helmet';
-import Router from 'koa-router';
+import session from 'koa-session2';
 import IO from 'koa-socket-2';
 import serve from 'koa-static';
-import session from 'koa-session';
 import { endpointContainer } from './constants';
-
+const Router = require('koa2-router');
 const bodyParser = require('koa-body');
 
 @Singleton()
@@ -26,24 +24,24 @@ export class HttpServerPlugin implements IServerPlugin {
    */
   public async warmup() {
     this.server
+      .use(session({ key: this.config.sessionKey || 'STEFFY:SESSION' }, this.server))
       .use(cors())
-      .use(session({ key: 'STEFFY.SESSION' }, this.server))
       .use(helmet())
       .use(
         bodyParser({
           multipart: true,
         })
       )
-      .use(await this.routes())
-      .use(this.router.allowedMethods());
+      .use(await this.routes());
+    // .use(this.router.allowedMethods());
   }
 
   public use(...args: any) {
     this.server.use(...args);
   }
 
-  public async listen(path?: string, socket?: IO);
-  public async listen(path?: string | IO, socket?: IO) {
+  public async listen(path?: string, socket?: IO, indexOn404?: boolean);
+  public async listen(path?: string | IO, socket?: IO, indexOn404: boolean = false) {
     if (path && typeof path === 'string') {
       this.serve(path as string);
     }
@@ -67,6 +65,7 @@ export class HttpServerPlugin implements IServerPlugin {
       if (!controllerMeta) throw new Error(`${restMeta.controller.constructor.name} is not a @Controller`);
       this.router[ep.method](`${controllerMeta.root}${ep.path}`, restMeta.func);
     });
-    return this.router.routes();
+    // return this.router.routes();
+    return this.router;
   }
 }
