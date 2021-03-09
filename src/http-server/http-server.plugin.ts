@@ -23,21 +23,20 @@ export class HttpServerPlugin implements IServerPlugin {
    * setup routes defined by the controllers
    */
   public async warmup(preflight: Array<any> = [], postflight: Array<any> = []) {
-    for(const mw of preflight) {
+    this.use(cors());
+    this.use(helmet());
+    this.server.use(session({ key: this.config.sessionKey || 'STEFFY:SESSION' }, this.server));
+    for (const mw of preflight) {
       this.server.use(mw);
     }
-    this.server
-      .use(session({ key: this.config.sessionKey || 'STEFFY:SESSION' }, this.server))
-      .use(cors())
-      .use(helmet())
-      .use(
-        bodyParser({
-          multipart: true,
-        })
-      )
-      .use(await this.routes());
+    this.use(
+      bodyParser({
+        multipart: true,
+      })
+    );
+    this.use(await this.routes());
     // .use(this.router.allowedMethods());
-    for(const mw of postflight) {
+    for (const mw of postflight) {
       this.server.use(mw);
     }
   }
