@@ -1,6 +1,6 @@
 {
   "name": "@steffy/http",
-  "version": "1.9.40",
+  "version": "1.9.41",
   "description": "Steffy HTTP plugin",
   "main": "dist/index.js",
   "scripts": {
