@@ -88,7 +88,9 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       }
     } catch (error) {
       // console.error(error);
+      return error;
     }
+    return tgt.$koa.response.body;
   };
   const meta: IRestMeta = {
     controller: target,
