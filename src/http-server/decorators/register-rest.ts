@@ -70,7 +70,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       fnArgs.push(context);
       fnArgs.push(next);
 
-      logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
+      logger.info('HttpServer', `Invoking: ${method} - ${path || '/'} - ${target.constructor.name}::${propertyKey}`);
       const fn = target[propertyKey];
       const result = await fn.call(tgt, ...fnArgs);
       if (result) {
@@ -78,7 +78,13 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
           if (result.errorCode) {
             tgt.$koa.status = result.errorCode || 500;
             tgt.$koa.body = result;
-            tgt.$koa.app.emit('error', result, tgt.$koa);
+            // tgt.$koa.app.emit('error', result, tgt.$koa);
+            throw new (class extends Error {
+              constructor(payload) {
+                super(payload.message);
+                Object.keys(payload).forEach((k) => (this[k] = payload[k]));
+              }
+            })(result);
           } else {
             tgt.$koa.response.body = result;
           }
@@ -87,7 +93,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
         }
       }
     } catch (error) {
-      // console.error(error);
+      // logger.error('HttpServer', error);
       return error;
     }
     return tgt.$koa.response.body;
