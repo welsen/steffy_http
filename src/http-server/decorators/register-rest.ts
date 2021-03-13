@@ -1,4 +1,4 @@
-import { IRestMeta, Logger } from '@steffy/core';
+import { IRestMeta } from '@steffy/core';
 import { storage } from '@steffy/di';
 import { endpointContainer } from '../constants/endpoint-container.constant';
 import FromProps from '../interfaces/from-props';
@@ -14,7 +14,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
   const filesMeta: FromProps = Reflect.getOwnMetadata('steffy:http:files', target, propertyKey) || new Map<number, string>();
   const queryMeta: FromProps = Reflect.getOwnMetadata('steffy:http:query', target, propertyKey) || new Map<number, string>();
   const wrapperFn = async (context: any, next: Function) => {
-    const logger = new Logger();
+    const logger: any = await storage.get('Logger');
     const tgt: any = storage.get(target.constructor);
     const params = Reflect.getMetadata('design:paramtypes', target, propertyKey);
     const fnArgs: any[] = [];
@@ -70,7 +70,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
       fnArgs.push(context);
       fnArgs.push(next);
 
-      // logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
+      logger.log('HttpServer', `Invoking: ${method} - ${path} - ${target.constructor.name}::${propertyKey}`);
       const fn = target[propertyKey];
       const result = await fn.call(tgt, ...fnArgs);
       if (result) {

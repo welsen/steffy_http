@@ -10,6 +10,7 @@ import serve from 'koa-static';
 import { endpointContainer } from './constants';
 const Router = require('koa2-router');
 const bodyParser = require('koa-body');
+import moment = require('moment');
 
 @Singleton()
 export class HttpServerPlugin implements IServerPlugin {
@@ -17,7 +18,7 @@ export class HttpServerPlugin implements IServerPlugin {
   public server = new Koa();
   public router = new Router();
 
-  constructor(@Optional('SteffyConfig') private config: any, @Inject() private logger: LoggerPlugin) {}
+  constructor(@Optional('SteffyConfig') private config: any, @Inject('Logger') private logger: LoggerPlugin) {}
 
   /**
    * setup routes defined by the controllers
@@ -25,7 +26,11 @@ export class HttpServerPlugin implements IServerPlugin {
   public async warmup(preflight: Array<any> = [], postflight: Array<any> = []) {
     this.use(cors());
     this.use(helmet());
-    this.server.use(session({ key: this.config.sessionKey || 'STEFFY:SESSION' }, this.server));
+    const maxAge =
+      +moment()
+        .add(this.config.expLength || 1, this.config.expUnit || 'days')
+        .toDate() - +moment().toDate();
+    this.server.use(session({ key: this.config.sessionKey || 'STEFFY:SESSION', maxAge }, this.server));
     for (const mw of preflight) {
       this.server.use(mw);
     }
