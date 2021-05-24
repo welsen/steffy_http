@@ -7,7 +7,7 @@ function registerRest(method: string, path: string, target: any, propertyKey: st
   if (path !== '' && path[0] !== '/') {
     throw new Error('invalid path! path must start with "/"');
   }
-  Reflect.defineMetadata('steffy:http:rest', {path, fn: propertyKey}, target, propertyKey);
+  Reflect.defineMetadata('steffy:http:rest', {path, method, fn: propertyKey}, target, propertyKey);
   const paramsMeta: FromProps = Reflect.getOwnMetadata('steffy:http:params', target, propertyKey) || new Map<number, string>();
   const stateMeta: FromProps = Reflect.getOwnMetadata('steffy:http:state', target, propertyKey) || new Map<number, string>();
   const sessionMeta: FromProps = Reflect.getOwnMetadata('steffy:http:session', target, propertyKey) || new Map<number, string>();
